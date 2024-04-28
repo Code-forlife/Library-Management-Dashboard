@@ -11,7 +11,7 @@ app = dash.Dash(
 # Define the offcanvas layout
 offcanvas = html.Div(
     [
-        dbc.Button("Check Out", id="open-offcanvas", n_clicks=0),
+        dbc.Button("≡", id="open-offcanvas", n_clicks=0, style={"backgroundColor": "rgb(26, 118, 255)", "color": "#FFFFFF"}),
         dbc.Offcanvas(
             dbc.ListGroup(
                 [
@@ -22,6 +22,7 @@ offcanvas = html.Div(
             ),
             id="offcanvas",
             is_open=False,
+            style={ "backgroundColor": "#000000"},
         ),
     ],
     className="my-3"
@@ -29,8 +30,10 @@ offcanvas = html.Div(
 
 # Define the app layout with a black background
 app.layout = dbc.Container([
-    html.H1('Library Management Dashboard', style={'textAlign': 'center', 'color': '#FFFFFF'}),  # Add Library Management System text
-    offcanvas, 
+   html.Div([
+    offcanvas,
+    html.H1('Library Management Dashboard', style={'textAlign': 'center', 'color': '#FFFFFF', 'display': 'inline-block','paddingLeft':'400px', 'marginRight': '30px'}),  # Add Library Management System text
+], className="d-flex justify-content-space-around align-items-center text-white p-4"),
     dash.page_container,
     dcc.Location(id='url', refresh=False)  # Location component to track page URL
 ], fluid=True, style={'backgroundColor': '#000000'})  # Set background color to black
