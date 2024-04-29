@@ -5,7 +5,7 @@ from dash import dcc, html
 
 # Read the dataset
 df = pd.read_csv('BAPISE.csv')
-dash.register_page(__name__, name='Overall')
+dash.register_page(__name__, name='Variety Analysis vs Year', path='/varietyanalysis')
 
 # Convert 'Date' column to datetime format
 df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%y')

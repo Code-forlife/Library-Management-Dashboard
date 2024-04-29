@@ -6,8 +6,12 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import calendar
 import sqlite3
+from wordcloud import WordCloud
 
 dash.register_page(__name__, name='Overall Analysis',path='/overallanalysis')
+
+#tailwind config
+external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
 # Connect to SQLite database
 conn = sqlite3.connect("student.db")
@@ -22,7 +26,7 @@ conn.close()
 df = df[~df['UID'].astype(str).str.startswith(('U', 'u'))]
 
 # Remove non-numeric characters from the 'Fine' column and then convert to integers
-df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
+df['Fine'] = df['Fine'].str.replace('.0', '').astype(int)
 
 # Calculate overall revenue, fine due, and fine waived
 overall_revenue = df[df['Type'] == 'Return']['Fine'].sum()
@@ -141,15 +145,41 @@ fine_per_year_fig.update_layout(
     font=dict(color='white')
 )
 
+
+@callback(
+    Output('wordcloud-graph', 'figure'),
+    [Input('wordcloud-graph', 'id')]
+)
+def update_wordcloud(_):
+    # Combine all project titles into a single string
+    text = ' '.join(df['Title'])
+
+    # Generate word cloud
+    wordcloud = WordCloud(width=800, height=400, background_color='black').generate(text)
+
+    # Plot word cloud
+    fig = px.imshow(wordcloud)
+    fig.update_layout(title='Word Cloud of Books Titles',
+                       title_x=0.5, 
+                       title_font_color='white', 
+                       title_font_size=40, 
+                       plot_bgcolor='#000000', 
+                       paper_bgcolor='#000000', 
+                       font_color='white',
+                       xaxis=dict(showticklabels=False),
+                       yaxis=dict(showticklabels=False))
+
+    return fig
+
 # Define the layout
 layout = html.Div(children=[
     html.Div(children=[
         html.Div(children=[
-            html.H1("Overall Metrics", style={'textAlign': 'center', 'margin-top': '50px'}),
+            html.H1("Overall Metrics", style={'textAlign': 'center', 'margin-top': '50px', 'margin-bottom': '50px'}),
             html.Div([
-                html.H3(f"Overall Revenue: ₹{overall_revenue}"),
-                html.H3(f"Fine Due: ₹{fine_due}"),
-                html.H3(f"Fine Waived: ₹{fine_waived}")
+                html.H3(f"Overall Revenue: ₹{overall_revenue}",className='text-xl h-[30%] flex items-center  font-semibold'),
+                html.H3(f"Fine Due: ₹{fine_due}",className='text-xl h-[30%] flex items-center  font-semibold'),
+                html.H3(f"Fine Waived: ₹{fine_waived}",className='text-xl h-[30%] flex items-center  font-semibold')
             ], style={'display': 'flex', 'flex-direction': 'row', 'justify-content': 'space-around'})
         ], className='six columns'),
         
@@ -215,6 +245,7 @@ layout = html.Div(children=[
             id='fine-per-month-type-graph',
             figure=fine_per_month_type_fig
         )
-    ], className='twelve columns')
+    ], className='twelve columns'),
+    dcc.Graph(id='wordcloud-graph'),
         
 ], style={'backgroundColor': '#000000', 'height': '100%'})

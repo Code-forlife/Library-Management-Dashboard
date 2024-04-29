@@ -3,11 +3,11 @@ import pandas as pd
 
 # Sample student data with email addresses
 student_data = pd.DataFrame({
-    'Name': ['John Doe', 'Jane Smith'],
-    'UID': ['001', '002'],
+    'Name': ['Sahil Shah', 'Pranay Singhvi'],
+    'UID': ['2021300126', '2021300126'],
     'Fine': [10, 20],
     'Date': ['2024-04-20', '2024-04-15'],  # Assuming these dates are within the range you'll input
-    'Email': ['johndoe@example.com', 'janesmith@example.com']
+    'Email': ['sahil.shah@spit.ac.in', 'pranay.singhvi@spit.ac.in']
 })
 
 # Function to simulate sending email

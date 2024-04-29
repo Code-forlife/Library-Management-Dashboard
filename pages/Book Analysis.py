@@ -6,6 +6,7 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 import calendar
 import sqlite3
+
 # Connect to SQLite database
 conn = sqlite3.connect("student.db")
 
@@ -13,10 +14,11 @@ conn = sqlite3.connect("student.db")
 df = pd.read_sql_query("SELECT * FROM students", conn)
 # Close the database connection
 conn.close()
-# Remove non-numeric characters from the 'Fine' column and then convert to integers
-df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
 
-dash.register_page(__name__, name='Book Analysis',path='/bookanalysis')
+# Remove non-numeric characters from the 'Fine' column and then convert to integers
+df['Fine'] = df['Fine'].str.replace('.0', '').astype(int)
+
+dash.register_page(__name__, name='Book Analysis', path='/bookanalysis')
 
 # Convert date column to datetime with corrected format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
@@ -31,21 +33,28 @@ issues_per_month = df[df['Type'] == 'Issue'].groupby('Month').size()
 
 layout = html.Div([
     html.H1("Library Analysis Dashboard"),
-    html.Label("Select a book:"),
-    dcc.Dropdown(
-        id='book-dropdown',
-        options=[{'label': book, 'value': book} for book in df['Title'].unique()],
-        value=df['Title'].unique()[0]  # Default value,
-    ),
+    html.Div([
+        html.Div(id='total-issues'),  # Display total issue count for selected book
+        html.Label("Select a book:", style={'margin-right': '10px', 'color': 'white'}),
+        dcc.Dropdown(
+            id='book-dropdown',
+            options=[{'label': book, 'value': book} for book in df['Title'].unique()],
+            value=df['Title'].unique()[0],  # Default value,
+            style={'width': '50%'}  # Set width of the dropdown
+        ),
+    ], style={'display': 'flex','justify-content':'space-around', 'align-items': 'center', 'margin-bottom': '20px', 'width':'100%','font-size':'20px'}),  # Flex layout for dropdown
+
+
     dbc.Row([
         dbc.Col(dcc.Graph(id='fines-graph'), width=6),
         dbc.Col(dcc.Graph(id='issues-graph'), width=6)
     ]),
+
     dbc.Row([
         dbc.Col(dcc.Graph(id='issues-month'), width=6),
         dbc.Col(dcc.Graph(id='fines-month'), width=6)
     ]),
-],style={'backgroundColor': '#000000', 'height': '100vh', 'color': 'black'})
+], style={'backgroundColor': '#000000', 'height': '100vh', 'color': 'black'})
 
 
 @callback(
@@ -55,10 +64,11 @@ layout = html.Div([
 def update_fines_graph(selected_book):
     filtered_df = df[df['Title'] == selected_book]
     total_fines_per_month = filtered_df.groupby(['Year', 'Month'])['Fine'].sum().reset_index()
-    
+
     # Create a new column combining year and month for x-axis labeling
-    total_fines_per_month['Year_Month'] = total_fines_per_month['Year'].astype(str) + '-' + total_fines_per_month['Month'].astype(str)
-    
+    total_fines_per_month['Year_Month'] = total_fines_per_month['Year'].astype(str) + '-' + total_fines_per_month[
+        'Month'].astype(str)
+
     return {
         'data': [go.Scatter(x=total_fines_per_month['Year_Month'], y=total_fines_per_month['Fine'], mode='lines')],
         'layout': go.Layout(
@@ -79,10 +89,11 @@ def update_fines_graph(selected_book):
 def update_issues_graph(selected_book):
     filtered_df = df[(df['Title'] == selected_book) & (df['Type'] == 'Issue')]
     issues_per_month = filtered_df.groupby(['Year', 'Month']).size().reset_index(name='Issue_Count')
-    
+
     # Create a new column combining year and month for x-axis labeling
-    issues_per_month['Year_Month'] = issues_per_month['Year'].astype(str) + '-' + issues_per_month['Month'].astype(str)
-    
+    issues_per_month['Year_Month'] = issues_per_month['Year'].astype(str) + '-' + issues_per_month['Month'].astype(
+        str)
+
     return {
         'data': [go.Scatter(x=issues_per_month['Year_Month'], y=issues_per_month['Issue_Count'], mode='lines')],
         'layout': go.Layout(
@@ -95,6 +106,7 @@ def update_issues_graph(selected_book):
         )
     }
 
+
 @callback(
     Output('issues-month', 'figure'),
     [Input('book-dropdown', 'value')]
@@ -105,7 +117,7 @@ def update_issues_graph_month(selected_book):
 
     # Sort months chronologically
     sorted_months = sorted(issues_per_month.index, key=lambda m: list(calendar.month_abbr).index(m))
-    
+
     return {
         'data': [go.Scatter(
             x=sorted_months,
@@ -116,13 +128,16 @@ def update_issues_graph_month(selected_book):
         )],
         'layout': go.Layout(
             title=f"Issue Count per Month for {selected_book}",
-            xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'), categoryorder='array', categoryarray=sorted_months, showgrid=False),
-            yaxis=dict(title='Number of Issues', tickfont=dict(color='white'), titlefont=dict(color='white'), showgrid=False),
+            xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'),
+                       categoryorder='array', categoryarray=sorted_months, showgrid=False),
+            yaxis=dict(title='Number of Issues', tickfont=dict(color='white'), titlefont=dict(color='white'),
+                       showgrid=False),
             plot_bgcolor='#000000',
             paper_bgcolor='#000000',
             font=dict(color='white')
         )
     }
+
 
 @callback(
     Output('fines-month', 'figure'),
@@ -134,7 +149,7 @@ def update_fines_graph_month(selected_book):
 
     # Sort months chronologically
     sorted_months = sorted(fines_per_month.index, key=lambda m: list(calendar.month_abbr).index(m))
-    
+
     return {
         'data': [go.Scatter(
             x=sorted_months,
@@ -145,11 +160,21 @@ def update_fines_graph_month(selected_book):
         )],
         'layout': go.Layout(
             title=f"Total Fines per Month for {selected_book}",
-            xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'), categoryorder='array', categoryarray=sorted_months, showgrid=False),
-            yaxis=dict(title='Total Fines', tickfont=dict(color='white'), titlefont=dict(color='white'), showgrid=False),
+            xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'),
+                       categoryorder='array', categoryarray=sorted_months, showgrid=False),
+            yaxis=dict(title='Total Fines', tickfont=dict(color='white'), titlefont=dict(color='white'),
+                       showgrid=False),
             plot_bgcolor='#000000',
             paper_bgcolor='#000000',
             font=dict(color='white')
         )
     }
 
+
+@callback(
+    Output('total-issues', 'children'),
+    [Input('book-dropdown', 'value')]
+)
+def update_total_issues(selected_book):
+    total_issues = df[(df['Title'] == selected_book) & (df['Type'] == 'Issue')].shape[0]
+    return html.Label(f"Total Issues for {selected_book}: {total_issues}", style={'color': 'white'})

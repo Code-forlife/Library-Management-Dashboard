@@ -13,7 +13,7 @@ df = pd.read_sql_query("SELECT * FROM students", conn)
 # Close the database connection
 conn.close()
 # Remove non-numeric characters from the 'Fine' column and then convert to integers
-df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
+df['Fine'] = df['Fine'].str.replace('.0', '').astype(int)
 
 
 # Convert date column to datetime with corrected format
