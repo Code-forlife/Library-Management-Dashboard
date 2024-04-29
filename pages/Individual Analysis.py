@@ -2,12 +2,22 @@ import dash
 from dash import dcc, html, callback, Output, Input
 import plotly.express as px
 import pandas as pd
+import sqlite3
 
-# Read the data
-df = pd.read_csv("BAPISE.csv")
+# Connect to SQLite database
+conn = sqlite3.connect("student.db")
 
-# Convert date column to datetime
-df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%y')
+# Read data from SQLite database
+df = pd.read_sql_query("SELECT * FROM students", conn)
+
+# Close the database connection
+conn.close()
+# Remove non-numeric characters from the 'Fine' column and then convert to integers
+df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
+
+
+# Convert date column to datetime with corrected format
+df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
 
 # Create Dash app
 dash.register_page(__name__,path='/', name='Individual Analysis')
@@ -91,4 +101,3 @@ def update_graphs(selected_uid):
                                       font=dict(color='#FFFFFF'), xaxis=dict(showgrid=False), yaxis=dict(showgrid=False))  # Update text color and remove grid lines
     
     return pie_chart, bar_chart, cumulative_fine_chart, title_issued_chart
-

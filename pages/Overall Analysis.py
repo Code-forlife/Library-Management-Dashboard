@@ -5,14 +5,24 @@ import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 import pandas as pd
 import calendar
+import sqlite3
 
-dash.register_page(__name__, name='Overall Analysis')
+dash.register_page(__name__, name='Overall Analysis',path='/overallanalysis')
 
-# Read the data
-df = pd.read_csv("BAPISE.csv")
+# Connect to SQLite database
+conn = sqlite3.connect("student.db")
+
+# Read data from SQLite database
+df = pd.read_sql_query("SELECT * FROM students", conn)
+
+# Close the database connection
+conn.close()
 
 # Remove all UIDs that start with 'U' or 'u'
 df = df[~df['UID'].astype(str).str.startswith(('U', 'u'))]
+
+# Remove non-numeric characters from the 'Fine' column and then convert to integers
+df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
 
 # Calculate overall revenue, fine due, and fine waived
 overall_revenue = df[df['Type'] == 'Return']['Fine'].sum()
@@ -45,7 +55,6 @@ issue_per_month_fig.add_trace(go.Scatter(
     marker=dict(color='rgb(26, 118, 255)', size=8)
 ))
 issue_per_month_fig.update_layout(
-    # title='Issue Count per Month',
     xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'), categoryorder='array', categoryarray=sorted_months, showgrid=False),
     yaxis=dict(title='Number of Issues', tickfont=dict(color='white'), titlefont=dict(color='white'), showgrid=False),
     plot_bgcolor='#000000',
@@ -77,11 +86,11 @@ students_per_year_fig.add_trace(go.Pie(
     hole=0.5
 ))
 students_per_year_fig.update_layout(
-    # title='Distribution of Students by Year',
     plot_bgcolor='#000000',
     paper_bgcolor='#000000',
     font=dict(color='white')
 )
+
 # Filter out "Issue" and "Reissue" categories
 filtered_df = df[~df['Type'].isin(['Issue', 'ReIssue'])]
 
@@ -105,17 +114,19 @@ for fine_type in fine_per_month_type.columns:
     ))
 
 fine_per_month_type_fig.update_layout(
-    # title='Fine Amount per Month by Type',
     xaxis=dict(title='Month', tickfont=dict(color='white'), titlefont=dict(color='white'), categoryorder='array', categoryarray=sorted_months, showgrid=False),
     yaxis=dict(title='Fine Amount', tickfont=dict(color='white'), titlefont=dict(color='white'), showgrid=False),
     plot_bgcolor='#000000',
     paper_bgcolor='#000000',
     font=dict(color='white')
 )
+
 # Group by year and sum the fine amount for each year
 fine_per_year = df.groupby('Year')['Fine'].sum()
+
 # Filter out "BH00" category and rename other categories
 fine_per_year = fine_per_year.drop('BH00')
+
 # Create a pie chart to display the distribution of fines by year
 fine_per_year_fig = go.Figure()
 fine_per_year_fig.add_trace(go.Pie(
@@ -125,14 +136,12 @@ fine_per_year_fig.add_trace(go.Pie(
     hole=0.5
 ))
 fine_per_year_fig.update_layout(
-    # title='Distribution of Fines by Year',
     plot_bgcolor='#000000',
     paper_bgcolor='#000000',
     font=dict(color='white')
 )
 
-
-# Add the pie chart to the layout
+# Define the layout
 layout = html.Div(children=[
     html.Div(children=[
         html.Div(children=[

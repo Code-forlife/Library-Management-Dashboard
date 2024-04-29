@@ -5,11 +5,21 @@ import plotly.graph_objs as go
 import pandas as pd
 import dash_bootstrap_components as dbc
 import calendar
-# Read the dataset
-df = pd.read_csv('BAPISE.csv')
-dash.register_page(__name__, name='Book Analysis')
+import sqlite3
+# Connect to SQLite database
+conn = sqlite3.connect("student.db")
 
-df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%y')
+# Read data from SQLite database
+df = pd.read_sql_query("SELECT * FROM students", conn)
+# Close the database connection
+conn.close()
+# Remove non-numeric characters from the 'Fine' column and then convert to integers
+df['Fine'] = df['Fine'].str.replace('.', '').astype(int)
+
+dash.register_page(__name__, name='Book Analysis',path='/bookanalysis')
+
+# Convert date column to datetime with corrected format
+df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
 df['Year'] = df['Date'].dt.year
 df['Month'] = df['Date'].dt.month
 
@@ -142,3 +152,4 @@ def update_fines_graph_month(selected_book):
             font=dict(color='white')
         )
     }
+

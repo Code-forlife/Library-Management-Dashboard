@@ -1,4 +1,9 @@
 Date,ID,Type,Title,Fine,author,Name,UID
+21-04-24,I20543,Return,Data Structures and Algorithms,50.0,Peterson,SAHIL SHAH,2021300115
+21-04-24,I20543,Fine Due,Data Structures and Algorithms,50.0,Peterson,SAHIL SHAH,2021300115
+21-04-24,I20543,Issue,Data Structures and Algorithms,0.0,Peterson,SAHIL SHAH,2021300115
+14-04-24,I30982,Issue,Machine Learning: A Probabilistic Perspective,0.0,"Murphy, Kevin P.",PRANAY SINGHVI,2021300126
+14-04-24,I50983,Issue,Deep Learning,0.0,Goodfellow,PRANAY SINGHVI,2021300126
 07-09-22,I00994,Issue,Investment Bankiing,0.0,Lee Jung B.,JAIN YASH HASMUKH,2020300022
 27-09-22,I00994,Return,Investment Bankiing,30.0,Lee Jung B.,JAIN YASH HASMUKH,2020300022
 27-09-22,I00994,Fine Due,Investment Bankiing,30.0,Lee Jung B.,JAIN YASH HASMUKH,2020300022

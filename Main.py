@@ -49,8 +49,6 @@ def toggle_offcanvas(n1, is_open):
         return not is_open
     return is_open
 
-
-
 # Run the app
 if __name__ == "__main__":
     app.run_server(debug=True, port=8001)
