@@ -40,3 +40,4 @@ overdue_students = update_student_table(start_date, end_date)
 
 # Send email to overdue students
 send_email_to_students(overdue_students)
+print("All Test Cases Passed!")

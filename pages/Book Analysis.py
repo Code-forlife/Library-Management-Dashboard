@@ -72,7 +72,7 @@ def update_fines_graph(selected_book):
     return {
         'data': [go.Scatter(x=total_fines_per_month['Year_Month'], y=total_fines_per_month['Fine'], mode='lines')],
         'layout': go.Layout(
-            title=f"Total Fines per Month for {selected_book}",
+            title=f"Total Fines per Month(Recent Trends) for {selected_book}",
             xaxis={'title': 'Month'},
             yaxis={'title': 'Total Fines'},
             plot_bgcolor='black',  # Set plot background color
@@ -97,7 +97,7 @@ def update_issues_graph(selected_book):
     return {
         'data': [go.Scatter(x=issues_per_month['Year_Month'], y=issues_per_month['Issue_Count'], mode='lines')],
         'layout': go.Layout(
-            title=f"Issues per Month for {selected_book}",
+            title=f"Issues per Month(Recent Trends) for {selected_book}",
             xaxis={'title': 'Month'},
             yaxis={'title': 'Number of Issues'},
             plot_bgcolor='black',  # Set plot background color

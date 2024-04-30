@@ -19,6 +19,9 @@ df['Fine'] = df['Fine'].str.replace('.0', '').astype(int)
 # Convert date column to datetime with corrected format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
 
+# Extract only date part from datetime column
+df['Date'] = df['Date'].dt.date
+
 # Create Dash app
 dash.register_page(__name__,path='/', name='Individual Analysis')
 
@@ -27,6 +30,8 @@ uid_options = [{'label': uid, 'value': uid} for uid in df['UID'].unique()]
 
 # Define app layout
 layout = html.Div(style={'backgroundColor': '#000000', 'color': '#FFFFFF'}, children=[
+    # Header
+    html.H1('Individual Analysis', style={'textAlign': 'center'}),
     # Flexbox container for name, fine due, and dropdown
     html.Div(style={'display': 'flex', 'justifyContent': 'space-around', 'width': '100%'}, children=[
         # Name and Fine Due
