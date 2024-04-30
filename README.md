@@ -33,13 +33,13 @@ This project is a web-based dashboard built using Dash and Plotly, designed to v
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/<your_username>/Library-Management-Dashboard.git
+   git clone https://github.com/Code-forlife>/Library-Management-Dashboard.git
    ```
 
 2. Install required dependencies:
 
    ```bash
-   pip install dash dash-renderer dash-core-components dash-html-components plotly
+   pip install dash dash-renderer dash-core-components dash-html-components plotly wordcloud
    ```
 
 ### Usage
@@ -56,7 +56,7 @@ This project is a web-based dashboard built using Dash and Plotly, designed to v
 
 ### Contributing
 
-We welcome contributions to this project! Feel free to fork the repository, make changes, and submit a pull request.
+Sahil Shah, Pranay Singhvi(DesiCoder), Sarthak Gharat, Shivam Kamble, Palaash Jain
 
 ### License
 
